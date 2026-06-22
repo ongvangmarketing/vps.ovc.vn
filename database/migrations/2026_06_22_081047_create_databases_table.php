@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('databases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('website_id')->nullable()->constrained('websites')->nullOnDelete();
+            $table->unsignedBigInteger('website_id')->nullable();
             $table->string('name');
             $table->string('username');
             $table->text('password'); // encrypted

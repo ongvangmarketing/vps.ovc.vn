@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\File;
 class VibeInstallCommand extends Command
 {
     protected $signature = 'vibe:install';
-    protected $description = 'Install and configure Vibe Deploy on VPS';
+    protected $description = 'Install and configure VPS OVC on VPS';
 
     public function handle()
     {
-        $this->info('Starting Vibe Deploy Installation...');
+        $this->info('Starting VPS OVC Installation...');
 
         // 1. Create root directory
         $rootPath = '/var/www/sites';

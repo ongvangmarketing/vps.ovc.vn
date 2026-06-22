@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('deployment_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('website_id')->constrained('websites')->cascadeOnDelete();
+            $table->unsignedBigInteger('website_id');
             $table->string('trigger_type'); // manual, webhook, upload, html, rollback
             $table->string('status'); // running, success, failed
             $table->timestamp('started_at')->nullable();

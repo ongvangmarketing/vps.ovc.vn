@@ -1,6 +1,6 @@
-# Vibe Deploy
+# VPS OVC
 
-Vibe Deploy is a Laravel 12 + Filament 4 based MVP system that automates deploying static, Laravel, Node.js, Next.js, and Vue.js websites on an Ubuntu VPS.
+VPS OVC is a Laravel 12 + Filament 4 based MVP system that automates deploying static, Laravel, Node.js, Next.js, and Vue.js websites on an Ubuntu VPS.
 
 ## 1. VPS Requirements
 - OS: Ubuntu 22.04 / 24.04 LTS
@@ -33,13 +33,13 @@ sudo apt install -y nodejs
 sudo npm install -g pm2
 ```
 
-## 3. Clone and Setup Vibe Deploy
-Clone the project into `/var/www/vibedeploy`:
+## 3. Clone and Setup VPS OVC
+Clone the project into `/var/www/vpsovc`:
 
 ```bash
 cd /var/www
-git clone <your-repo-url> vibedeploy
-cd vibedeploy
+git clone <your-repo-url> vpsovc
+cd vpsovc
 
 composer install --optimize-autoloader --no-dev
 npm install
@@ -55,14 +55,14 @@ nano .env
 
 # Set:
 # DB_CONNECTION=mysql
-# DB_DATABASE=vibe_deploy
+# DB_DATABASE=vps_ovc
 # DB_USERNAME=root
 # DB_PASSWORD=your_password
 ```
 
 Create the database in MySQL:
 ```bash
-mysql -u root -p -e "CREATE DATABASE vibe_deploy;"
+mysql -u root -p -e "CREATE DATABASE vps_ovc;"
 ```
 
 ## 5. Run Migrations & Setup
@@ -79,14 +79,14 @@ php artisan vibe:install
 php artisan vibe:create-admin
 ```
 
-## 7. Configure Nginx for Vibe Deploy
+## 7. Configure Nginx for VPS OVC
 Follow the output from `php artisan vibe:install` to create the Nginx configuration. It will look like this:
 
 ```nginx
 server {
     listen 80;
     server_name deploy.ovc.vn;
-    root /var/www/vibedeploy/public;
+    root /var/www/vpsovc/public;
     index index.php;
 
     location / {
@@ -117,21 +117,21 @@ To process deployments in the background, set up a Supervisor worker:
 
 ```bash
 sudo apt install supervisor -y
-sudo nano /etc/supervisor/conf.d/vibe-deploy-worker.conf
+sudo nano /etc/supervisor/conf.d/vps-ovc-worker.conf
 ```
 
 Add the following:
 ```ini
-[program:vibe-deploy-worker]
+[program:vps-ovc-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/vibedeploy/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/vpsovc/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
 killasgroup=true
 user=root
 numprocs=1
-stdout_logfile=/var/www/vibedeploy/storage/logs/worker.log
+stdout_logfile=/var/www/vpsovc/storage/logs/worker.log
 stopwaitsecs=3600
 ```
 
@@ -139,7 +139,7 @@ Start the worker:
 ```bash
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl start vibe-deploy-worker:*
+sudo supervisorctl start vps-ovc-worker:*
 ```
 
 ## 10. Adding Your First Website
@@ -155,10 +155,18 @@ sudo supervisorctl start vibe-deploy-worker:*
 2. Add a new webhook:
    - Payload URL: `https://deploy.ovc.vn/webhook/github/{your-domain}`
    - Content type: `application/json`
-   - Secret: (Paste the webhook secret from your Vibe Deploy panel)
-3. Now, whenever you push code, Vibe Deploy will automatically pull and build.
+   - Secret: (Paste the webhook secret from your VPS OVC panel)
+3. Now, whenever you push code, VPS OVC will automatically pull and build.
 
-## 12. Troubleshooting
-- **Permission Denied**: Ensure `storage` and `bootstrap/cache` are writable. Vibe Deploy worker runs as `root` to manage Nginx and PM2, so ensure permissions are aligned.
+## 12. VPS OVC Self-Update (CI/CD)
+To automatically update the VPS OVC panel itself when you push code to GitHub from your Mac:
+1. In your VPS OVC GitHub repository, go to **Settings > Webhooks**
+2. Add a new webhook:
+   - Payload URL: `https://deploy.ovc.vn/webhook/self-update?token=vibe-secret-token` (Replace `vibe-secret-token` with the `SELF_UPDATE_TOKEN` in your VPS `.env` file).
+   - Content type: `application/json`
+3. Now, whenever you push code to `main`, the VPS will automatically run `git pull`, `composer install`, `npm run build`, and restart the queue.
+
+## 13. Troubleshooting
+- **Permission Denied**: Ensure `storage` and `bootstrap/cache` are writable. VPS OVC worker runs as `root` to manage Nginx and PM2, so ensure permissions are aligned.
 - **Queue not processing**: Run `php artisan queue:work` manually to see if jobs are failing.
 - **Nginx errors**: Check `/var/log/nginx/error.log` and verify the generated `nginx.conf` in `/etc/nginx/sites-available/`.

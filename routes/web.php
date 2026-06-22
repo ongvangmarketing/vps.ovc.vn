@@ -13,7 +13,7 @@ Route::post('/webhook/github/{domain}', [GithubWebhookController::class, 'handle
 Route::get('/auth/github', [\App\Http\Controllers\GitHubAuthController::class, 'redirect'])->name('github.login');
 Route::get('/auth/github/callback', [\App\Http\Controllers\GitHubAuthController::class, 'callback']);
 
-// Vibe Deploy Self-Update Route
+// VPS OVC Self-Update Route
 Route::post('/webhook/self-update', function (\Illuminate\Http\Request $request) {
     if ($request->query('token') !== config('app.self_update_token', env('SELF_UPDATE_TOKEN', 'vibe-secret-token'))) {
         abort(403, 'Unauthorized self-update webhook');

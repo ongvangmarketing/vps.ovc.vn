@@ -29,7 +29,7 @@ class SelfUpdateJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('Starting self-update of Vibe Deploy...');
+        Log::info('Starting self-update of VPS OVC...');
         
         $basePath = base_path();
         
