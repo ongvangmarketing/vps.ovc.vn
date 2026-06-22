@@ -17,10 +17,14 @@ class CreateWebsite extends CreateRecord
                 'name' => $data['new_folder_name'],
                 'slug' => $data['new_folder_slug'],
                 'type' => $data['new_folder_type'] ?? null,
-                'description' => $data['new_folder_desc'] ?? null,
+                'description' => $data['new_folder_description'] ?? null,
                 'path' => '/var/www/sites/' . $data['new_folder_slug'],
             ]);
             $data['vps_folder_id'] = $folder->id;
+        }
+
+        if (empty($data['domain']) && !empty($data['subdomain']) && !empty($data['base_domain'])) {
+            $data['domain'] = $data['subdomain'] . '.' . $data['base_domain'];
         }
 
         if (!empty($data['vps_folder_id'])) {
@@ -32,10 +36,15 @@ class CreateWebsite extends CreateRecord
             $data['root_path'] = '/var/www/sites/' . $data['domain'];
         }
 
-        unset($data['new_folder_name']);
-        unset($data['new_folder_slug']);
-        unset($data['new_folder_type']);
-        unset($data['new_folder_desc']);
+        $fieldsToUnset = [
+            'new_folder_name', 'new_folder_slug', 'new_folder_type', 'new_folder_description', 'new_folder_desc',
+            'source_type', 'zip_file', 'git_repo_url', 'raw_html', 'deploy_path',
+            'subdomain', 'base_domain', 'auto_attach_domain', 'redirect_subdomain', 'preview_root_path'
+        ];
+
+        foreach ($fieldsToUnset as $field) {
+            unset($data[$field]);
+        }
 
         $data['status'] = \App\Enums\WebsiteStatus::Deploying;
         $data['webhook_secret'] = \Illuminate\Support\Str::random(32);
