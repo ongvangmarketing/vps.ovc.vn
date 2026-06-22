@@ -126,12 +126,15 @@ class DeployService
                 break;
         }
 
-        // Add custom build/start commands if any
+        // Add custom build command if any
         if ($website->build_command) {
             $commands[] = $website->build_command;
         }
+        
+        // Handle start command with PM2 so it doesn't block
         if ($website->start_command) {
-            $commands[] = $website->start_command;
+            $appName = $website->domain . '_custom';
+            $commands[] = "pm2 restart {$appName} || pm2 start \"{$website->start_command}\" --name {$appName}";
         }
 
         foreach ($commands as $command) {
