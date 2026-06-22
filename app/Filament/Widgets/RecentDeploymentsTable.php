@@ -47,7 +47,7 @@ class RecentDeploymentsTable extends BaseWidget
             ->actions([
                 Tables\Actions\Action::make('manage')
                     ->label('Quản lý')
-                    ->url(fn (Website $record): string => route('filament.admin.resources.websites.view', $record))
+                    ->url(fn (Website $record): string => route('filament.admin.resources.websites.edit', $record))
                     ->button()
                     ->outlined(),
             ]);
