@@ -351,8 +351,8 @@ class WebsiteResource extends Resource
                                                                 ->live(onBlur: true),
                                                             Forms\Components\Select::make('base_domain')
                                                                 ->label('Base Domain')
-                                                                ->options(['ovc.vn' => '.ovc.vn'])
-                                                                ->default('ovc.vn')
+                                                                ->options(['vps.ovc.vn' => '.vps.ovc.vn'])
+                                                                ->default('vps.ovc.vn')
                                                                 ->required()
                                                                 ->live(),
                                                         ]),
