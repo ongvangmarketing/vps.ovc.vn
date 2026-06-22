@@ -236,11 +236,9 @@ class DeployService
 
     protected function getNginxTemplate(Website $website): string
     {
-        $subdomainFull = $website->subdomain . '.' . $website->base_domain;
-        
-        $serverNames = [$subdomainFull];
-        if ($website->domain && $website->auto_attach_domain) {
-            $serverNames[] = $website->domain;
+        $serverNames = [$website->domain];
+        // Only add www if it's a top level domain (1 dot)
+        if (substr_count($website->domain, '.') === 1) {
             $serverNames[] = 'www.' . $website->domain;
         }
         $serverNameString = implode(' ', $serverNames);
@@ -251,16 +249,7 @@ class DeployService
         }
 
         $redirectBlock = '';
-        if ($website->domain && $website->redirect_subdomain) {
-            $redirectBlock = "server {
-    listen 80;
-    server_name {$subdomainFull};
-    return 301 \$scheme://{$website->domain}\$request_uri;
-}
-";
-            $serverNames = [$website->domain, 'www.' . $website->domain];
-            $serverNameString = implode(' ', $serverNames);
-        }
+        // Removed redirect block logic for now as it relied on non-existent columns
         
         if ($website->type->value === 'laravel') {
             $publicDir = trim($website->public_dir ?: 'public', '/');
